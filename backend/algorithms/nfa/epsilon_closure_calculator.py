@@ -8,8 +8,8 @@ only epsilon (empty string) transitions.
 """
 
 from typing import Set
-from ..models.automaton import Automaton
-from ..models.state import State
+from ...models.automaton import Automaton
+from ...models.state import State
 
 
 class EpsilonClosureCalculator:

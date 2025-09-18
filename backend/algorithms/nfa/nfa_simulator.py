@@ -8,9 +8,9 @@ NFA simulation algorithm with epsilon closure computation.
 """
 
 from typing import Set, List, Dict, Tuple
-from ..models.automaton import Automaton
-from ..models.state import State
-from ..models.transition import Transition
+from ...models.automaton import Automaton
+from ...models.state import State
+from ...models.transition import Transition
 from .nfa_configuration import NFAConfiguration
 from .epsilon_closure_calculator import EpsilonClosureCalculator
 from .nfa_step_by_step_simulator import NFAStepByStepSimulator

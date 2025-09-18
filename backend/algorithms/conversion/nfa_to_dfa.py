@@ -8,10 +8,10 @@ finite automaton (DFA) using the subset construction algorithm.
 
 from typing import Set, Dict, List, Tuple, FrozenSet
 from collections import deque
-from ..models.automaton import Automaton
-from ..models.state import State
-from ..models.transition import Transition
-from .epsilon_closure_calculator import EpsilonClosureCalculator
+from ...models.automaton import Automaton
+from ...models.state import State
+from ...models.transition import Transition
+from ..nfa.epsilon_closure_calculator import EpsilonClosureCalculator
 from .state_set import StateSet
 from .conversion_step import ConversionStep
 
@@ -276,8 +276,8 @@ class NFAToDFAConverter:
         Returns:
             True if both automata agree on all test strings, False otherwise
         """
-        from .nfa_simulator import NFASimulator
-        from .dfa_simulator import DFASimulator
+        from ..nfa.nfa_simulator import NFASimulator
+        from ..dfa.dfa_simulator import DFASimulator
         
         nfa_sim = NFASimulator(nfa)
         dfa_sim = DFASimulator(dfa)

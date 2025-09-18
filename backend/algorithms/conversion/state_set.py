@@ -6,7 +6,7 @@ as a single DFA state during the subset construction algorithm.
 """
 
 from typing import Set, FrozenSet
-from ..models.state import State
+from ...models.state import State
 
 
 class StateSet:

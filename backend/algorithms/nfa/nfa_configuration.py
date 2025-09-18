@@ -7,8 +7,8 @@ at a specific point in the computation.
 """
 
 from typing import List
-from ..models.state import State
-from ..models.transition import Transition
+from ...models.state import State
+from ...models.transition import Transition
 
 
 class NFAConfiguration:

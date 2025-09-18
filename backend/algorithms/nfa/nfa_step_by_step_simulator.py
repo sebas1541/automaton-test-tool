@@ -7,7 +7,7 @@ configuration sets and epsilon closures.
 """
 
 from typing import Set, List, TYPE_CHECKING
-from ..models.state import State
+from ...models.state import State
 from .nfa_configuration import NFAConfiguration
 from .epsilon_closure_calculator import EpsilonClosureCalculator
 

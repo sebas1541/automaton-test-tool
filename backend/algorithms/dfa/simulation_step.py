@@ -7,8 +7,8 @@ the symbol being processed during each step of the simulation.
 """
 
 from typing import Optional
-from ..models.state import State
-from ..models.transition import Transition
+from ...models.state import State
+from ...models.transition import Transition
 
 
 class SimulationStep:

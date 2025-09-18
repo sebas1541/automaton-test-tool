@@ -7,7 +7,7 @@ purposes and debugging.
 """
 
 from typing import List, TYPE_CHECKING
-from ..models.state import State
+from ...models.state import State
 from .simulation_step import SimulationStep
 
 if TYPE_CHECKING:

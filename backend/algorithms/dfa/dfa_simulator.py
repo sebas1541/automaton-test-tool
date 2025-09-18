@@ -7,9 +7,9 @@ standard DFA simulation algorithm with step-by-step execution tracking.
 """
 
 from typing import List, Optional, Tuple
-from ..models.automaton import Automaton
-from ..models.state import State
-from ..models.transition import Transition
+from ...models.automaton import Automaton
+from ...models.state import State
+from ...models.transition import Transition
 from .simulation_step import SimulationStep
 from .step_by_step_simulation import StepByStepSimulation
 
