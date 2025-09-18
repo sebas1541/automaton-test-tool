@@ -6,112 +6,14 @@ nondeterministic finite automaton (NFA) into an equivalent deterministic
 finite automaton (DFA) using the subset construction algorithm.
 """
 
-from typing import Set, Dict, List, Tuple, Optional, FrozenSet
+from typing import Set, Dict, List, Tuple, FrozenSet
 from collections import deque
 from ..models.automaton import Automaton
 from ..models.state import State
 from ..models.transition import Transition
-from .nfa_simulator import EpsilonClosureCalculator
-
-
-class StateSet:
-    """
-    Represents a set of NFA states as a single DFA state.
-    
-    This class encapsulates a frozenset of states and provides
-    utilities for generating unique identifiers and managing
-    the subset construction process.
-    """
-    
-    def __init__(self, states: Set[State]):
-        """
-        Initialize a state set.
-        
-        Args:
-            states: Set of NFA states that this DFA state represents
-        """
-        self._states = frozenset(states)
-        self._id = self._generate_id()
-    
-    @property
-    def states(self) -> FrozenSet[State]:
-        """Get the frozenset of NFA states."""
-        return self._states
-    
-    @property
-    def id(self) -> str:
-        """Get the unique identifier for this state set."""
-        return self._id
-    
-    @property
-    def is_final(self) -> bool:
-        """Check if this state set contains any final states."""
-        return any(state.is_final for state in self._states)
-    
-    def _generate_id(self) -> str:
-        """Generate a unique identifier based on the state IDs."""
-        if not self._states:
-            return "∅"
-        
-        state_ids = sorted(state.id for state in self._states)
-        return "{" + ",".join(state_ids) + "}"
-    
-    def __eq__(self, other) -> bool:
-        """Check equality based on the state set."""
-        if not isinstance(other, StateSet):
-            return False
-        return self._states == other._states
-    
-    def __hash__(self) -> int:
-        """Return hash for use in sets and dicts."""
-        return hash(self._states)
-    
-    def __str__(self) -> str:
-        """Return string representation."""
-        return self._id
-    
-    def __repr__(self) -> str:
-        """Return detailed string representation for debugging."""
-        return f"StateSet({self._id})"
-
-
-class ConversionStep:
-    """
-    Represents a step in the NFA to DFA conversion process.
-    
-    Tracks the creation of new DFA states and transitions during
-    the subset construction algorithm for debugging and visualization.
-    """
-    
-    def __init__(
-        self,
-        step_number: int,
-        source_state_set: StateSet,
-        symbol: str,
-        target_state_set: StateSet,
-        is_new_state: bool = False
-    ):
-        """
-        Initialize a conversion step.
-        
-        Args:
-            step_number: The step number in the conversion process
-            source_state_set: The source DFA state (set of NFA states)
-            symbol: The symbol triggering the transition
-            target_state_set: The target DFA state (set of NFA states)
-            is_new_state: Whether the target state was newly created
-        """
-        self.step_number = step_number
-        self.source_state_set = source_state_set
-        self.symbol = symbol
-        self.target_state_set = target_state_set
-        self.is_new_state = is_new_state
-    
-    def __str__(self) -> str:
-        """Return string representation of the conversion step."""
-        new_marker = " (NEW)" if self.is_new_state else ""
-        return (f"Step {self.step_number}: {self.source_state_set} "
-                f"--{self.symbol}--> {self.target_state_set}{new_marker}")
+from .epsilon_closure_calculator import EpsilonClosureCalculator
+from .state_set import StateSet
+from .conversion_step import ConversionStep
 
 
 class NFAToDFAConverter:
@@ -125,7 +27,7 @@ class NFAToDFAConverter:
     
     def __init__(self):
         """Initialize the NFA to DFA converter."""
-        self._closure_calculator = EpsilonClosureCalculator()
+        pass
     
     def convert(self, nfa: Automaton) -> Tuple[Automaton, List[ConversionStep]]:
         """
@@ -150,7 +52,7 @@ class NFAToDFAConverter:
         step_counter = 0
         
         # Create initial DFA state from epsilon closure of NFA initial state
-        initial_nfa_closure = self._closure_calculator.compute_closure_single(
+        initial_nfa_closure = EpsilonClosureCalculator.compute_closure_single(
             nfa.initial_state, nfa
         )
         initial_state_set = StateSet(initial_nfa_closure)
@@ -311,7 +213,7 @@ class NFAToDFAConverter:
         
         # Compute epsilon closure of the intermediate states
         if intermediate_states:
-            return self._closure_calculator.compute_closure(intermediate_states, nfa)
+            return EpsilonClosureCalculator.compute_closure(intermediate_states, nfa)
         else:
             return set()
     
