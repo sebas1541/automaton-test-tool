@@ -41,16 +41,13 @@ st.markdown("""
         text-align: center;
         margin-bottom: 2rem;
     }
-    .automaton-info {
+    .automaton-info, .simulation-result {
         background-color: #f1f5f9;
+        color: #1e293b;
         padding: 1rem;
         border-radius: 0.5rem;
         margin: 1rem 0;
-    }
-    .simulation-result {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        margin: 1rem 0;
+        transition: background 0.2s, color 0.2s;
     }
     .accepted {
         background-color: #dcfce7;
@@ -59,6 +56,12 @@ st.markdown("""
     .rejected {
         background-color: #fef2f2;
         border-left: 4px solid #dc2626;
+    }
+    @media (prefers-color-scheme: dark) {
+        .automaton-info, .simulation-result {
+            background-color: #262730 !important;
+            color: #fff !important;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
