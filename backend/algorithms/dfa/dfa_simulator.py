@@ -27,16 +27,13 @@ class DFASimulator:
         Initialize the DFA simulator.
         
         Args:
-            automaton: The automaton to simulate
+            automaton: The DFA to simulate
             
         Raises:
-            ValueError: If the automaton is not deterministic or has no initial state
+            ValueError: If the automaton has no initial state
         """
-        if not automaton.is_deterministic():
-            raise ValueError("Automaton must be deterministic for DFA simulation")
-        
         if automaton.initial_state is None:
-            raise ValueError("Automaton must have an initial state")
+            raise ValueError("DFA must have an initial state")
         
         self._automaton = automaton
     
