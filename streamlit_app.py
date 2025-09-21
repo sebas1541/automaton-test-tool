@@ -244,17 +244,50 @@ def main():
             
             st.graphviz_chart(graph.source)
             
-            # Automaton information
+            # Automaton information - Quintuple format
             st.markdown(f"""
             <div class="automaton-info">
-                <h4>📋 DFA Information</h4>
-                <p><strong>States:</strong> {len(st.session_state.states)} ({', '.join(sorted(st.session_state.states))})</p>
-                <p><strong>Alphabet:</strong> {{{', '.join(st.session_state.alphabet)}}}</p>
-                <p><strong>Initial State:</strong> {st.session_state.initial_state}</p>
-                <p><strong>Final States:</strong> {{{', '.join(sorted(st.session_state.final_states))}}}</p>
-                <p><strong>Transitions:</strong> {len(st.session_state.transitions)}</p>
+                <h4>📋 Quintuple of the Automaton</h4>
+                <p><strong>Estados (Q):</strong> {{{', '.join(sorted(st.session_state.states))}}}</p>
+                <p><strong>Alfabeto (Σ):</strong> {{{', '.join(st.session_state.alphabet)}}}</p>
+                <p><strong>Estado Inicial (q₀):</strong> {st.session_state.initial_state}</p>
+                <p><strong>Estados Finales (F):</strong> {{{', '.join(sorted(st.session_state.final_states)) if st.session_state.final_states else '∅'}}}</p>
+                <p><strong>Función de Transición (δ):</strong> Ver tabla a continuación</p>
             </div>
             """, unsafe_allow_html=True)
+            
+            # Transition table
+            if st.session_state.transitions and st.session_state.states and st.session_state.alphabet:
+                st.subheader("📊 Tabla de Transiciones")
+                
+                # Create transition table
+                transition_dict = {}
+                for transition in st.session_state.transitions:
+                    key = (transition['from_state'], transition['symbol'])
+                    transition_dict[key] = transition['to_state']
+                
+                # Create table data
+                table_data = []
+                for state in sorted(st.session_state.states):
+                    row = {'Estado': state}
+                    
+                    # Mark initial and final states
+                    if state == st.session_state.initial_state:
+                        row['Estado'] += ' (q₀)'
+                    if state in st.session_state.final_states:
+                        row['Estado'] += ' (F)'
+                    
+                    # Add transitions for each symbol
+                    for symbol in sorted(st.session_state.alphabet):
+                        next_state = transition_dict.get((state, symbol), '-')
+                        row[f'δ({symbol})'] = next_state
+                    
+                    table_data.append(row)
+                
+                # Display table
+                import pandas as pd
+                df = pd.DataFrame(table_data)
+                st.dataframe(df, width='stretch', hide_index=True)
         
         # Transitions editor
         st.subheader("🔄 Transitions")
@@ -305,45 +338,41 @@ def main():
                 
                 # Always use DFA simulator
                 simulator = DFASimulator(automaton)
-                result = simulator.simulate(test_string)
                 
-                # Display result
-                result_class = "accepted" if result[0] else "rejected"
-                result_text = "ACCEPTED ✅" if result[0] else "REJECTED ❌"
+                # Run step-by-step simulation to get detailed path
+                step_simulator = StepByStepSimulation(simulator, test_string)
+                step_simulator.run_to_completion()
+                steps = step_simulator.steps
+                
+                # Display detailed evaluation process
+                st.subheader(f"🔍 Evaluando la cadena: \"{test_string}\"")
+                
+                if len(steps) > 1:  # More than just initial step
+                    for i in range(1, len(steps)):  # Skip initial step
+                        step = steps[i]
+                        prev_state = steps[i-1].current_state.id if hasattr(steps[i-1].current_state, 'id') else str(steps[i-1].current_state)
+                        curr_state = step.current_state.id if hasattr(step.current_state, 'id') else str(step.current_state)
+                        symbol = step.symbol if step.symbol else 'ε'
+                        
+                        st.write(f"**{i}.** Desde el estado ({prev_state}) con el símbolo '{symbol}' se transita al estado ({curr_state}).")
+                
+                # Final result
+                final_state = steps[-1].current_state.id if hasattr(steps[-1].current_state, 'id') else str(steps[-1].current_state)
+                is_accepted = step_simulator.is_accepted
+                result_text = "ACEPTADA ✅" if is_accepted else "RECHAZADA ❌"
+                result_class = "accepted" if is_accepted else "rejected"
+                
+                st.write(f"**Proceso finalizado.** El estado final es ({final_state}).")
                 
                 st.markdown(f"""
                 <div class="simulation-result {result_class}">
-                    <h4>🎯 Simulation Result</h4>
-                    <p><strong>Input:</strong> "{test_string}"</p>
-                    <p><strong>Result:</strong> {result_text}</p>
+                    <h4>🎯 Resultado Final</h4>
+                    <p><strong>Resultado:</strong> La cadena "{test_string}" es {result_text}</p>
                 </div>
                 """, unsafe_allow_html=True)
                 
             except Exception as e:
                 st.error(f"Simulation failed: {str(e)}")
-        
-        # Step-by-step simulation
-        if st.button("👣 Step-by-Step Simulation", disabled=not test_string or not st.session_state.states):
-            try:
-                # Build automaton from session state
-                automaton = build_automaton_from_session_state()
-                
-                # Always use DFA step-by-step simulation
-                simulator = DFASimulator(automaton)
-                step_simulator = StepByStepSimulation(simulator, test_string)
-                step_simulator.run_to_completion()
-                steps = step_simulator.steps
-                
-                # Display steps
-                st.subheader("📝 Execution Steps")
-                for i, step in enumerate(steps):
-                    with st.expander(f"Step {i + 1}: {step.current_state} → {step.input_symbol if step.input_symbol else 'ε'}"):
-                        st.write(f"**Current State:** {step.current_state}")
-                        st.write(f"**Input Symbol:** {step.input_symbol if step.input_symbol else 'ε'}")
-                        st.write(f"**Remaining Input:** {step.remaining_input}")
-                        
-            except Exception as e:
-                st.error(f"Step-by-step simulation failed: {str(e)}")
 
 if __name__ == "__main__":
     main()
