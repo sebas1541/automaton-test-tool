@@ -32,9 +32,25 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling
+# Custom CSS for better styling and hiding unwanted menu items
 st.markdown("""
 <style>
+    /* Hide Streamlit's default menu items */
+    #MainMenu {visibility: hidden;}
+    .stDeployButton {display:none;}
+    footer {visibility: hidden;}
+    .stActionButton {display:none;}
+    header {visibility: hidden;}
+    
+    /* Hide the hamburger menu completely */
+    .css-1rs6os.edgvbvh3 {display: none;}
+    .css-10trblm.e16nr0p30 {display: none;}
+    
+    /* Hide Print, Deploy, Record, Clear cache options */
+    [data-testid="stToolbar"] {display: none;}
+    [data-testid="stDecoration"] {display: none;}
+    [data-testid="stStatusWidget"] {display: none;}
+    
     .main-header {
         font-size: 3rem;
         color: #1e3a8a;
