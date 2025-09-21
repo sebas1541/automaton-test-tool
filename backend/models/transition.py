@@ -1,9 +1,9 @@
 """
-Transition class for representing automaton transitions.
+Transition class for representing DFA transitions.
 
 This module provides the Transition class which represents transitions (edges)
-between states in finite automata. Each transition connects two states and
-is triggered by a specific symbol from the alphabet.
+between states in Deterministic Finite Automata. Each transition connects two 
+states and is triggered by a specific symbol from the alphabet.
 """
 
 from typing import Optional
@@ -12,21 +12,17 @@ from .state import State
 
 class Transition:
     """
-    Represents a transition between two states in a finite automaton.
+    Represents a transition between two states in a Deterministic Finite Automaton (DFA).
     
-    A transition defines how an automaton moves from one state to another
-    when processing a specific input symbol. It includes support for
-    epsilon (lambda) transitions using None or empty string as the symbol.
+    A transition defines how a DFA moves from one state to another
+    when processing a specific input symbol.
     """
-    
-    # Constants for special transition types
-    EPSILON = ""  # Empty string represents epsilon/lambda transitions
     
     def __init__(
         self, 
         from_state: State, 
         to_state: State, 
-        symbol: Optional[str] = None
+        symbol: str
     ):
         """
         Initialize a new Transition.
@@ -34,20 +30,22 @@ class Transition:
         Args:
             from_state: The source state of the transition
             to_state: The destination state of the transition
-            symbol: The input symbol that triggers this transition.
-                   None or empty string represents epsilon transition.
+            symbol: The input symbol that triggers this transition
         
         Raises:
             TypeError: If from_state or to_state are not State instances
+            ValueError: If symbol is empty or None
         """
         if not isinstance(from_state, State):
             raise TypeError("from_state must be a State instance")
         if not isinstance(to_state, State):
             raise TypeError("to_state must be a State instance")
+        if not symbol:
+            raise ValueError("symbol cannot be empty or None for DFA transitions")
         
         self._from_state = from_state
         self._to_state = to_state
-        self._symbol = symbol if symbol is not None else self.EPSILON
+        self._symbol = symbol
     
     @property
     def from_state(self) -> State:
@@ -65,14 +63,11 @@ class Transition:
         return self._symbol
     
     @symbol.setter
-    def symbol(self, value: Optional[str]) -> None:
+    def symbol(self, value: str) -> None:
         """Set the transition symbol."""
-        self._symbol = value if value is not None else self.EPSILON
-    
-    @property
-    def is_epsilon(self) -> bool:
-        """Check if this is an epsilon (lambda) transition."""
-        return self._symbol == self.EPSILON
+        if not value:
+            raise ValueError("symbol cannot be empty or None for DFA transitions")
+        self._symbol = value
     
     def matches_symbol(self, input_symbol: str) -> bool:
         """
@@ -88,8 +83,7 @@ class Transition:
     
     def __str__(self) -> str:
         """Return string representation of the transition."""
-        symbol_display = "ε" if self.is_epsilon else self._symbol
-        return f"{self._from_state.id} --{symbol_display}--> {self._to_state.id}"
+        return f"{self._from_state.id} --{self._symbol}--> {self._to_state.id}"
     
     def __repr__(self) -> str:
         """Return detailed string representation for debugging."""
@@ -148,14 +142,12 @@ class Transition:
         return cls(
             from_state=state_lookup[from_state_id],
             to_state=state_lookup[to_state_id],
-            symbol=data.get('symbol')
+            symbol=data['symbol']
         )
     
     def copy_with_states(self, from_state: State, to_state: State) -> 'Transition':
         """
         Create a copy of this transition with different states.
-        
-        Useful for automaton transformations like NFA to DFA conversion.
         
         Args:
             from_state: New source state

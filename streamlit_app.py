@@ -1,7 +1,7 @@
 """
-Automaton Test Tool - Streamlit Web App
+DFA Test Tool - Streamlit Web App
 
-A comprehensive tool for creating, visualizing, and testing finite automata.
+A comprehensive tool for creating, visualizing, and testing Deterministic Finite Automata (DFA).
 Built using Streamlit for the UI and the existing backend classes for logic.
 """
 
@@ -15,11 +15,11 @@ import os
 # Add the backend directory to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
 
+# =============================================================================
+# IMPORTS PARA AUTÓMATAS FINITOS DETERMINISTAS (DFA)
+# =============================================================================
 from backend.algorithms.dfa.dfa_simulator import DFASimulator
-from backend.algorithms.nfa.nfa_simulator import NFASimulator
-from backend.algorithms.conversion.nfa_to_dfa import NFAToDFAConverter
 from backend.algorithms.dfa.step_by_step_simulation import StepByStepSimulation
-from backend.algorithms.nfa.nfa_step_by_step_simulator import NFAStepByStepSimulator
 from backend.models.automaton import Automaton
 from backend.models.state import State
 from backend.models.transition import Transition
@@ -67,7 +67,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def create_automaton_graph(states: Dict, transitions: List, initial_state: str, final_states: Set[str]) -> graphviz.Digraph:
-    """Create a graphviz representation of the automaton."""
+    """Create a graphviz representation of the DFA."""
     dot = graphviz.Digraph(comment='Automaton', format='svg')
     dot.attr(rankdir='LR')
     dot.attr('node', shape='circle')
@@ -138,9 +138,7 @@ def build_automaton_from_session_state() -> Automaton:
     )
 
 def initialize_session_state():
-    """Initialize session state variables."""
-    if 'automaton_type' not in st.session_state:
-        st.session_state.automaton_type = 'DFA'
+    """Initialize session state variables for DFA only."""
     if 'states' not in st.session_state:
         st.session_state.states = {'q0'}
     if 'alphabet' not in st.session_state:
@@ -156,7 +154,6 @@ def initialize_session_state():
 
 def create_sample_dfa():
     """Create a sample DFA that accepts strings ending with '01'."""
-    st.session_state.automaton_type = 'DFA'
     st.session_state.states = {'q0', 'q1', 'q2'}
     st.session_state.alphabet = ['0', '1']
     st.session_state.transitions = [
@@ -170,49 +167,23 @@ def create_sample_dfa():
     st.session_state.initial_state = 'q0'
     st.session_state.final_states = {'q2'}
 
-def create_sample_nfa():
-    """Create a sample NFA that accepts strings containing '01'."""
-    st.session_state.automaton_type = 'NFA'
-    st.session_state.states = {'q0', 'q1', 'q2'}
-    st.session_state.alphabet = ['0', '1']
-    st.session_state.transitions = [
-        {'from_state': 'q0', 'to_state': 'q0', 'symbol': '0'},
-        {'from_state': 'q0', 'to_state': 'q0', 'symbol': '1'},
-        {'from_state': 'q0', 'to_state': 'q1', 'symbol': '0'},
-        {'from_state': 'q1', 'to_state': 'q2', 'symbol': '1'}
-    ]
-    st.session_state.initial_state = 'q0'
-    st.session_state.final_states = {'q2'}
-
 def main():
     """Main Streamlit app."""
     initialize_session_state()
     
     # Header
-    st.markdown('<h1 class="main-header">🤖 Automaton Test Tool</h1>', unsafe_allow_html=True)
-    st.markdown("**Interactive Finite Automata Visualization and Simulation**")
+    st.markdown('<h1 class="main-header">🤖 DFA Test Tool</h1>', unsafe_allow_html=True)
+    st.markdown("**Interactive Deterministic Finite Automata Visualization and Simulation**")
     
     # Sidebar for automaton configuration
     with st.sidebar:
-        st.header("⚙️ Automaton Configuration")
+        st.header("⚙️ DFA Configuration")
         
         # Sample automata buttons
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("📘 Sample DFA", help="Create a DFA that accepts strings ending with '01'"):
-                create_sample_dfa()
-                st.rerun()
-        with col2:
-            if st.button("📗 Sample NFA", help="Create an NFA that accepts strings containing '01'"):
-                create_sample_nfa()
-                st.rerun()
-        
+        if st.button("📘 Sample DFA", help="Create a DFA that accepts strings ending with '01'"):
+            create_sample_dfa()
+            st.rerun()
         st.divider()
-        
-        # Automaton type
-        automaton_type = st.selectbox("Automaton Type", ["DFA", "NFA"], 
-                                    index=0 if st.session_state.automaton_type == "DFA" else 1)
-        st.session_state.automaton_type = automaton_type
         
         # Alphabet configuration
         st.subheader("Alphabet")
@@ -244,7 +215,7 @@ def main():
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.header("📊 Automaton Visualization")
+        st.header("📊 DFA Visualization")
         
         if st.session_state.states:
             # Create and display the automaton graph
@@ -260,8 +231,7 @@ def main():
             # Automaton information
             st.markdown(f"""
             <div class="automaton-info">
-                <h4>📋 Automaton Information</h4>
-                <p><strong>Type:</strong> {st.session_state.automaton_type}</p>
+                <h4>📋 DFA Information</h4>
                 <p><strong>States:</strong> {len(st.session_state.states)} ({', '.join(sorted(st.session_state.states))})</p>
                 <p><strong>Alphabet:</strong> {{{', '.join(st.session_state.alphabet)}}}</p>
                 <p><strong>Initial State:</strong> {st.session_state.initial_state}</p>
@@ -280,7 +250,7 @@ def main():
                 with col_from:
                     from_state = st.selectbox("From", sorted(st.session_state.states), key="from_state")
                 with col_symbol:
-                    symbol = st.selectbox("Symbol", st.session_state.alphabet + ["ε"], key="symbol")
+                    symbol = st.selectbox("Symbol", st.session_state.alphabet, key="symbol")
                 with col_to:
                     to_state = st.selectbox("To", sorted(st.session_state.states), key="to_state")
                 with col_add:
@@ -317,13 +287,9 @@ def main():
                 # Build automaton from session state
                 automaton = build_automaton_from_session_state()
                 
-                if st.session_state.automaton_type == "DFA":
-                    simulator = DFASimulator(automaton)
-                    result = simulator.simulate(test_string)
-                    
-                else:  # NFA
-                    simulator = NFASimulator(automaton)
-                    result = simulator.simulate(test_string)
+                # Always use DFA simulator
+                simulator = DFASimulator(automaton)
+                result = simulator.simulate(test_string)
                 
                 # Display result
                 result_class = "accepted" if result[0] else "rejected"
@@ -346,93 +312,22 @@ def main():
                 # Build automaton from session state
                 automaton = build_automaton_from_session_state()
                 
-                if st.session_state.automaton_type == "DFA":
-                    simulator = DFASimulator(automaton)
-                    step_simulator = StepByStepSimulation(simulator, test_string)
-                    step_simulator.run_to_completion()
-                    steps = step_simulator.steps
-                    
-                    # Display steps
-                    st.subheader("📝 Execution Steps")
-                    for i, step in enumerate(steps):
-                        with st.expander(f"Step {i + 1}: {step.current_state} → {step.input_symbol if step.input_symbol else 'ε'}"):
-                            st.write(f"**Current State:** {step.current_state}")
-                            st.write(f"**Input Symbol:** {step.input_symbol if step.input_symbol else 'ε'}")
-                    
-                else:  # NFA
-                    simulator = NFASimulator(automaton)
-                    step_simulator = NFAStepByStepSimulator(simulator, test_string)
-                    step_simulator.run_to_completion()
-                    config_history = step_simulator.configuration_history
-                    
-                    # Display configuration evolution
-                    st.subheader("📝 NFA Configuration Evolution")
-                    for i, config_set in enumerate(config_history):
-                        symbol = test_string[i-1] if i > 0 and i-1 < len(test_string) else "ε (initial)"
-                        states = {config.state.id for config in config_set}
-                        with st.expander(f"Step {i + 1}: {symbol} → {{{', '.join(sorted(states))}}}"):
-                            st.write(f"**Input Symbol:** {symbol}")
-                            st.write(f"**Active States:** {{{', '.join(sorted(states))}}}")
-                            for config in config_set:
-                                st.write(f"  - State {config.state.id} at position {config.position}")
+                # Always use DFA step-by-step simulation
+                simulator = DFASimulator(automaton)
+                step_simulator = StepByStepSimulation(simulator, test_string)
+                step_simulator.run_to_completion()
+                steps = step_simulator.steps
+                
+                # Display steps
+                st.subheader("📝 Execution Steps")
+                for i, step in enumerate(steps):
+                    with st.expander(f"Step {i + 1}: {step.current_state} → {step.input_symbol if step.input_symbol else 'ε'}"):
+                        st.write(f"**Current State:** {step.current_state}")
+                        st.write(f"**Input Symbol:** {step.input_symbol if step.input_symbol else 'ε'}")
                         st.write(f"**Remaining Input:** {step.remaining_input}")
                         
             except Exception as e:
                 st.error(f"Step-by-step simulation failed: {str(e)}")
-        
-        # NFA to DFA conversion
-        if st.session_state.automaton_type == "NFA":
-            st.divider()
-            st.subheader("🔄 NFA to DFA Conversion")
-            
-            if st.button("🔀 Convert to DFA"):
-                try:
-                    # Build NFA for conversion
-                    nfa_transitions = {}
-                    for transition in st.session_state.transitions:
-                        from_state = transition['from_state']
-                        symbol = transition['symbol']
-                        to_state = transition['to_state']
-                        
-                        if from_state not in nfa_transitions:
-                            nfa_transitions[from_state] = {}
-                        if symbol not in nfa_transitions[from_state]:
-                            nfa_transitions[from_state][symbol] = []
-                        nfa_transitions[from_state][symbol].append(to_state)
-                    
-                    converter = NFAToDFAConverter(
-                        states=st.session_state.states,
-                        alphabet=set(st.session_state.alphabet),
-                        transitions=nfa_transitions,
-                        initial_state=st.session_state.initial_state,
-                        final_states=st.session_state.final_states
-                    )
-                    
-                    dfa_result = converter.convert()
-                    
-                    st.success(f"✅ Conversion successful! DFA has {len(dfa_result.states)} states.")
-                    
-                    # Update session state with DFA
-                    st.session_state.automaton_type = "DFA"
-                    st.session_state.states = dfa_result.states
-                    st.session_state.initial_state = dfa_result.initial_state
-                    st.session_state.final_states = dfa_result.final_states
-                    
-                    # Convert transitions format
-                    new_transitions = []
-                    for state, state_transitions in dfa_result.transitions.items():
-                        for symbol, target_state in state_transitions.items():
-                            new_transitions.append({
-                                'from_state': state,
-                                'to_state': target_state,
-                                'symbol': symbol
-                            })
-                    st.session_state.transitions = new_transitions
-                    
-                    st.rerun()
-                    
-                except Exception as e:
-                    st.error(f"Conversion failed: {str(e)}")
 
 if __name__ == "__main__":
     main()

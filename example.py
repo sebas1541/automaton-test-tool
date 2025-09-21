@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Example script demonstrating the Automaton Test Tool library.
+Example script demonstrating the DFA Test Tool library.
 
-This script creates sample DFA and NFA automata, runs simulations,
-and demonstrates the NFA to DFA conversion algorithm.
+This script creates sample DFA automata, runs simulations,
+and demonstrates step-by-step execution.
 """
 
 from backend.models import State, Transition, Automaton
-from backend.algorithms import DFASimulator, NFASimulator, NFAToDFAConverter
+from backend.algorithms import DFASimulator, StepByStepSimulation
 
 
 def create_simple_dfa():
@@ -40,130 +40,123 @@ def create_simple_dfa():
     return dfa
 
 
-def create_simple_nfa():
-    """Create a simple NFA with epsilon transitions."""
-    print("\n=== Creating Simple NFA (with epsilon transitions) ===")
+def create_binary_dfa():
+    """Create a DFA that accepts binary strings with even number of 1s."""
+    print("\n=== Creating Binary DFA (accepts even number of 1s) ===")
     
     # Create states
-    q0 = State("q0", (100, 100), is_final=False, label="Start")
-    q1 = State("q1", (250, 100), is_final=False, label="Middle")
-    q2 = State("q2", (400, 100), is_final=True, label="Accept")
+    even = State("even", (100, 100), is_final=True, label="Even 1s")
+    odd = State("odd", (300, 100), is_final=False, label="Odd 1s")
     
-    # Create transitions (including epsilon transitions)
-    t1 = Transition(q0, q1, "a")      # Go to q1 on 'a'
-    t2 = Transition(q0, q1, "")       # Epsilon transition to q1
-    t3 = Transition(q1, q2, "b")      # Go to q2 on 'b'
-    t4 = Transition(q1, q0, "a")      # Back to q0 on 'a'
+    # Create transitions
+    t1 = Transition(even, even, "0")  # Stay in even on '0'
+    t2 = Transition(even, odd, "1")   # Go to odd on '1'
+    t3 = Transition(odd, odd, "0")    # Stay in odd on '0'
+    t4 = Transition(odd, even, "1")   # Go to even on '1'
     
     # Create automaton
-    nfa = Automaton(
-        states={q0, q1, q2},
+    dfa = Automaton(
+        states={even, odd},
         transitions={t1, t2, t3, t4},
-        initial_state=q0,
-        final_states={q2},
-        alphabet={"a", "b"}
+        initial_state=even,
+        final_states={even},
+        alphabet={"0", "1"}
     )
     
-    print(f"Created NFA: {nfa}")
-    return nfa
-
-
-def test_dfa_simulation(dfa):
-    """Test DFA simulation with various strings."""
-    print("\n=== Testing DFA Simulation ===")
-    
-    simulator = DFASimulator(dfa)
-    test_strings = ["ab", "aab", "bab", "abb", "a", "b", ""]
-    
-    for test_string in test_strings:
-        is_accepted = simulator.is_accepted(test_string)
-        result = "ACCEPTED" if is_accepted else "REJECTED"
-        print(f"String '{test_string}': {result}")
-
-
-def test_nfa_simulation(nfa):
-    """Test NFA simulation with various strings."""
-    print("\n=== Testing NFA Simulation ===")
-    
-    simulator = NFASimulator(nfa)
-    test_strings = ["b", "ab", "aab", "a", ""]
-    
-    for test_string in test_strings:
-        is_accepted = simulator.is_accepted(test_string)
-        result = "ACCEPTED" if is_accepted else "REJECTED"
-        print(f"String '{test_string}': {result}")
-
-
-def test_nfa_to_dfa_conversion(nfa):
-    """Test NFA to DFA conversion."""
-    print("\n=== Testing NFA to DFA Conversion ===")
-    
-    converter = NFAToDFAConverter()
-    
-    # Analyze the conversion
-    analysis = converter.analyze_conversion(nfa)
-    
-    print("Conversion Analysis:")
-    print(f"  NFA: {analysis['nfa_stats']['states']} states, {analysis['nfa_stats']['transitions']} transitions")
-    print(f"  DFA: {analysis['dfa_stats']['states']} states, {analysis['dfa_stats']['transitions']} transitions")
-    print(f"  State explosion ratio: {analysis['conversion_metrics']['state_explosion_ratio']:.2f}")
-    
-    # Get the converted DFA
-    dfa, state_mapping = converter.convert_with_state_mapping(nfa)
-    
-    print("\nState Mapping:")
-    for dfa_state_id, state_set in state_mapping.items():
-        nfa_state_ids = [state.id for state in state_set.states]
-        print(f"  DFA state {dfa_state_id} represents NFA states {nfa_state_ids}")
-    
+    print(f"Created DFA: {dfa}")
     return dfa
 
 
-def test_equivalence(nfa, converted_dfa):
-    """Test that NFA and converted DFA are equivalent."""
-    print("\n=== Testing NFA-DFA Equivalence ===")
+def test_dfa_simulation(dfa, test_name=""):
+    """Test DFA simulation with various strings."""
+    print(f"\n=== Testing DFA Simulation{' - ' + test_name if test_name else ''} ===")
     
-    nfa_sim = NFASimulator(nfa)
-    dfa_sim = DFASimulator(converted_dfa)
+    simulator = DFASimulator(dfa)
     
-    test_strings = ["", "a", "b", "ab", "ba", "aab", "abb", "aabb"]
+    # Test strings based on DFA alphabet
+    if "a" in dfa.alphabet:
+        test_strings = ["ab", "aab", "bab", "abb", "a", "b", ""]
+    else:
+        test_strings = ["", "0", "1", "00", "01", "10", "11", "101", "110", "1001"]
     
-    all_equivalent = True
     for test_string in test_strings:
-        nfa_result = nfa_sim.is_accepted(test_string)
-        dfa_result = dfa_sim.is_accepted(test_string)
-        
-        if nfa_result == dfa_result:
-            status = "✓"
-        else:
-            status = "✗"
-            all_equivalent = False
-        
-        print(f"  '{test_string}': NFA={nfa_result}, DFA={dfa_result} {status}")
+        is_accepted = simulator.is_accepted(test_string)
+        result = "ACCEPTED" if is_accepted else "REJECTED"
+        print(f"String '{test_string}': {result}")
+
+
+def test_step_by_step_simulation(dfa, test_string="ab"):
+    """Test step-by-step DFA simulation."""
+    print(f"\n=== Step-by-Step Simulation for '{test_string}' ===")
     
-    print(f"\nEquivalence test: {'PASSED' if all_equivalent else 'FAILED'}")
+    simulator = DFASimulator(dfa)
+    step_sim = StepByStepSimulation(simulator, test_string)
+    
+    print(f"Input string: '{test_string}'")
+    print(f"Initial state: {dfa.initial_state.id}")
+    print()
+    
+    step_num = 1
+    while not step_sim.is_finished:
+        print(f"Step {step_num}:")
+        print(f"  Current state: {step_sim.current_state.id}")
+        print(f"  Processed input: '{step_sim.processed_input}'")
+        print(f"  Remaining input: '{step_sim.remaining_input}'")
+        print()
+        
+        step_sim.step()
+        step_num += 1
+    
+    # Final result
+    print(f"Final state: {step_sim.current_state.id}")
+    print(f"Final result: {'ACCEPTED' if step_sim.is_accepted else 'REJECTED'}")
+
+
+def demonstrate_dfa_properties(dfa):
+    """Demonstrate various DFA properties and methods."""
+    print(f"\n=== DFA Properties Analysis ===")
+    
+    print(f"Number of states: {len(dfa.states)}")
+    print(f"Number of transitions: {len(dfa.transitions)}")
+    print(f"Alphabet: {sorted(dfa.alphabet)}")
+    print(f"Initial state: {dfa.initial_state.id}")
+    print(f"Final states: {[s.id for s in dfa.final_states]}")
+    
+    print(f"\nState details:")
+    for state in sorted(dfa.states, key=lambda s: s.id):
+        final_marker = " (FINAL)" if state.is_final else ""
+        print(f"  {state.id}: {state.label}{final_marker}")
+    
+    print(f"\nTransition table:")
+    for transition in sorted(dfa.transitions, key=lambda t: (t.from_state.id, t.symbol)):
+        print(f"  {transition.from_state.id} --{transition.symbol}--> {transition.to_state.id}")
 
 
 def main():
     """Main example execution."""
-    print("🤖 Automaton Test Tool - Example Demonstration")
+    print("🤖 DFA Test Tool - Example Demonstration")
     print("=" * 50)
     
-    # Create and test DFA
-    dfa = create_simple_dfa()
-    test_dfa_simulation(dfa)
+    # Create and test first DFA (strings ending with 'ab')
+    dfa1 = create_simple_dfa()
+    demonstrate_dfa_properties(dfa1)
+    test_dfa_simulation(dfa1, "Strings ending with 'ab'")
+    test_step_by_step_simulation(dfa1, "aab")
     
-    # Create and test NFA
-    nfa = create_simple_nfa()
-    test_nfa_simulation(nfa)
+    print("\n" + "=" * 50)
     
-    # Convert NFA to DFA
-    converted_dfa = test_nfa_to_dfa_conversion(nfa)
+    # Create and test second DFA (even number of 1s)
+    dfa2 = create_binary_dfa()
+    demonstrate_dfa_properties(dfa2)
+    test_dfa_simulation(dfa2, "Even number of 1s")
+    test_step_by_step_simulation(dfa2, "1101")
     
-    # Test equivalence
-    test_equivalence(nfa, converted_dfa)
-    
-    print("\n🎉 Example demonstration completed!")
+    print("\n🎉 DFA demonstration completed!")
+    print("\nKey features demonstrated:")
+    print("  ✅ DFA creation with states and transitions")
+    print("  ✅ String acceptance testing")
+    print("  ✅ Step-by-step simulation")
+    print("  ✅ DFA property analysis")
 
 
 if __name__ == "__main__":
