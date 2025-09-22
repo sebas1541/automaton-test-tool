@@ -37,23 +37,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling and fixing sidebar issues
+# Custom CSS for better styling - minimal approach
 st.markdown("""
 <style>
-    /* Fix for sidebar visibility issues */
-    .css-1d391kg {display: block !important;}
-    .css-1cypcdb {display: block !important;}
-    section[data-testid="stSidebar"] {display: block !important;}
-    
-    /* Hide unwanted Streamlit elements but keep sidebar functional */
+    /* Only hide the specific menu items that we know are safe to hide */
     #MainMenu {visibility: hidden;}
     .stDeployButton {display:none;}
     footer {visibility: hidden;}
-    .stActionButton {display:none;}
-    header {visibility: hidden;}
-    [data-testid="stToolbar"] {display: none;}
-    [data-testid="stDecoration"] {display: none;}
-    [data-testid="stStatusWidget"] {display: none;}
+    
+    /* DON'T touch anything else that might affect sidebar */
     
     .main-header {
         font-size: 3rem;
@@ -207,8 +199,8 @@ def load_automaton_to_session_state(automaton: Automaton):
         st.session_state.refresh_counter = 0
     st.session_state.refresh_counter += 1
     
-    # Set import flag to trigger UI update
-    st.session_state.imported = True
+    # Set flag for import success message (only for actual file imports)
+    st.session_state.show_import_success = True
 
 def export_automaton_to_json() -> str:
     """Export current automaton to JSON format."""
@@ -279,9 +271,6 @@ def import_automaton_from_json(json_content: str) -> bool:
         # Create and load automaton
         automaton = Automaton.from_dict(data)
         load_automaton_to_session_state(automaton)
-        
-        # Force update of session state
-        st.session_state.imported = True
         
         return True
         
@@ -379,9 +368,6 @@ def import_automaton_from_xml(xml_content: str) -> bool:
         automaton = Automaton.from_dict(data)
         load_automaton_to_session_state(automaton)
         
-        # Force update of session state
-        st.session_state.imported = True
-        
         return True
         
     except ET.ParseError as e:
@@ -403,8 +389,10 @@ def initialize_session_state():
         st.session_state.initial_state = 'q0'
     if 'final_states' not in st.session_state:
         st.session_state.final_states = set()
-    if 'imported' not in st.session_state:
-        st.session_state.imported = False
+    if 'show_import_success' not in st.session_state:
+        st.session_state.show_import_success = False
+    if 'file_uploader_key' not in st.session_state:
+        st.session_state.file_uploader_key = 0
     if 'last_upload_key' not in st.session_state:
         st.session_state.last_upload_key = None
     if 'refresh_counter' not in st.session_state:
@@ -431,10 +419,17 @@ def create_sample_dfa():
     st.session_state.initial_state = 'q0'
     st.session_state.final_states = {'q2'}
     
-    # Force widget refresh
+    # Force widget refresh and clear file uploader
     if 'refresh_counter' not in st.session_state:
         st.session_state.refresh_counter = 0
     st.session_state.refresh_counter += 1
+    
+    # Clear file uploader by changing its key
+    st.session_state.file_uploader_key += 1
+    st.session_state.last_upload_key = None
+    
+    # NO mostrar mensaje de importación para samples
+    st.session_state.show_import_success = False
 
 def clear_automaton():
     """Clear the current automaton."""
@@ -443,7 +438,13 @@ def clear_automaton():
     st.session_state.transitions = []
     st.session_state.initial_state = 'q0'
     st.session_state.final_states = set()
-    st.session_state.imported = False
+    
+    # Clear file uploader by changing its key
+    st.session_state.file_uploader_key += 1
+    st.session_state.last_upload_key = None
+    
+    # No mostrar mensaje de importación
+    st.session_state.show_import_success = False
     
     # Force widget refresh
     if 'refresh_counter' not in st.session_state:
@@ -458,10 +459,10 @@ def main():
     st.markdown('<h1 class="main-header">🤖 DFA Test Tool</h1>', unsafe_allow_html=True)
     st.markdown("**Interactive Deterministic Finite Automata Visualization and Simulation**")
     
-    # Handle import success message
-    if st.session_state.imported:
+    # Handle import success message (only for actual file imports, not samples)
+    if st.session_state.get('show_import_success', False):
         st.success("✅ Automaton imported successfully!")
-        st.session_state.imported = False
+        st.session_state.show_import_success = False
     
     # Sidebar for automaton configuration
     with st.sidebar:
@@ -475,7 +476,7 @@ def main():
             uploaded_file = st.file_uploader(
                 "Choose JSON or XML file", 
                 type=["json", "xml"],
-                key="file_upload"
+                key=f"file_upload_{st.session_state.file_uploader_key}"
             )
             
             # Process uploaded file
@@ -493,7 +494,7 @@ def main():
                         file_extension = uploaded_file.name.lower().split('.')[-1] if '.' in uploaded_file.name else ''
                         
                         # Clear any previous import flags
-                        st.session_state.imported = False
+                        st.session_state.show_import_success = False
                         
                         # Try based on file extension first, then content
                         if file_extension == 'json':
