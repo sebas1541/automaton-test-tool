@@ -31,31 +31,15 @@ from backend.models.transition import Transition
 
 # Configure Streamlit page
 st.set_page_config(
-    page_title="Automaton Test Tool",
+    page_title="Herramienta de Pruebas AFD",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for better styling and hiding unwanted menu items
+# Custom CSS for better styling
 st.markdown("""
 <style>
-    /* Hide Streamlit's default menu items */
-    #MainMenu {visibility: hidden;}
-    .stDeployButton {display:none;}
-    footer {visibility: hidden;}
-    .stActionButton {display:none;}
-    header {visibility: hidden;}
-    
-    /* Hide the hamburger menu completely */
-    .css-1rs6os.edgvbvh3 {display: none;}
-    .css-10trblm.e16nr0p30 {display: none;}
-    
-    /* Hide Print, Deploy, Record, Clear cache options */
-    [data-testid="stToolbar"] {display: none;}
-    [data-testid="stDecoration"] {display: none;}
-    [data-testid="stStatusWidget"] {display: none;}
-    
     .main-header {
         font-size: 3rem;
         color: #1e3a8a;
@@ -195,7 +179,7 @@ def export_to_json() -> str:
         data = automaton.to_dict()
         return json.dumps(data, indent=2, ensure_ascii=False)
     except Exception as e:
-        st.error(f"Error exporting to JSON: {str(e)}")
+        st.error(f"Error exportando a JSON: {str(e)}")
         return ""
 
 def export_to_xml() -> str:
@@ -244,7 +228,7 @@ def export_to_xml() -> str:
         dom = xml.dom.minidom.parseString(xml_str)
         return dom.toprettyxml(indent="  ")
     except Exception as e:
-        st.error(f"Error exporting to XML: {str(e)}")
+        st.error(f"Error exportando a XML: {str(e)}")
         return ""
 
 def import_from_json(json_content: str) -> bool:
@@ -254,10 +238,10 @@ def import_from_json(json_content: str) -> bool:
         load_automaton_from_dict(data)
         return True
     except json.JSONDecodeError as e:
-        st.error(f"Invalid JSON format: {str(e)}")
+        st.error(f"Formato JSON inválido: {str(e)}")
         return False
     except Exception as e:
-        st.error(f"Error importing JSON: {str(e)}")
+        st.error(f"Error importando JSON: {str(e)}")
         return False
 
 def import_from_xml(xml_content: str) -> bool:
@@ -322,10 +306,10 @@ def import_from_xml(xml_content: str) -> bool:
         load_automaton_from_dict(data)
         return True
     except ET.ParseError as e:
-        st.error(f"Invalid XML format: {str(e)}")
+        st.error(f"Formato XML inválido: {str(e)}")
         return False
     except Exception as e:
-        st.error(f"Error importing XML: {str(e)}")
+        st.error(f"Error importando XML: {str(e)}")
         return False
 
 def load_automaton_from_dict(data: dict):
@@ -398,11 +382,11 @@ def import_automaton_file(uploaded_file) -> bool:
             return import_from_xml(content)
         
         else:
-            st.error("File format not recognized. Please upload a valid JSON or XML file.")
+            st.error("Formato de archivo no reconocido. Por favor sube un archivo JSON o XML válido.")
             return False
     
     except Exception as e:
-        st.error(f"Error reading file: {str(e)}")
+        st.error(f"Error leyendo el archivo: {str(e)}")
         return False
 
 def main():
@@ -410,27 +394,27 @@ def main():
     initialize_session_state()
     
     # Header
-    st.markdown('<h1 class="main-header">🤖 DFA Test Tool</h1>', unsafe_allow_html=True)
-    st.markdown("**Interactive Deterministic Finite Automata Visualization and Simulation**")
+    st.markdown('<h1 class="main-header">🤖 Herramienta de Pruebas AFD</h1>', unsafe_allow_html=True)
+    st.markdown("**Visualización y Simulación Interactiva de Autómatas Finitos Deterministas**")
     
     # Sidebar for automaton configuration
     with st.sidebar:
-        st.header("⚙️ DFA Configuration")
+        st.header("⚙️ Configuración del AFD")
         
         # Sample automata buttons
-        if st.button("📘 Sample DFA", help="Create a DFA that accepts strings ending with '01'"):
+        if st.button("📘 AFD de Ejemplo", help="Crear un AFD que acepta cadenas terminadas en '01'"):
             create_sample_dfa()
             st.rerun()
         st.divider()
         
         # Import/Export section
-        st.subheader("📁 Import/Export")
+        st.subheader("📁 Importar/Exportar")
         
         # Import section
         uploaded_file = st.file_uploader(
-            "Import Automaton", 
+            "Importar Autómata", 
             type=['json', 'xml'],
-            help="Upload a JSON or XML file containing an automaton",
+            help="Sube un archivo JSON o XML que contenga un autómata",
             key="file_uploader"
         )
         
@@ -445,7 +429,7 @@ def main():
             if st.session_state.last_imported_file != file_id:
                 if import_automaton_file(uploaded_file):
                     st.session_state.last_imported_file = file_id
-                    st.success("✅ Automaton imported successfully!")
+                    st.success("✅ ¡Autómata importado exitosamente!")
                     st.rerun()
                 else:
                     st.session_state.last_imported_file = file_id
@@ -457,7 +441,7 @@ def main():
                 json_content = export_to_json()
                 if json_content:
                     st.download_button(
-                        label="📤 Export JSON",
+                        label="📤 Exportar JSON",
                         data=json_content,
                         file_name="automaton.json",
                         mime="application/json",
@@ -469,7 +453,7 @@ def main():
                 xml_content = export_to_xml()
                 if xml_content:
                     st.download_button(
-                        label="📤 Export XML",
+                        label="📤 Exportar XML",
                         data=xml_content,
                         file_name="automaton.xml",
                         mime="application/xml",
@@ -479,27 +463,27 @@ def main():
         st.divider()
         
         # Alphabet configuration
-        st.subheader("Alphabet")
-        alphabet_str = st.text_input("Symbols (comma-separated)", 
+        st.subheader("Alfabeto")
+        alphabet_str = st.text_input("Símbolos (separados por comas)", 
                                    value=",".join(st.session_state.alphabet))
         st.session_state.alphabet = [s.strip() for s in alphabet_str.split(",") if s.strip()]
         
         # States configuration
-        st.subheader("States")
-        states_str = st.text_input("States (comma-separated)", 
+        st.subheader("Estados")
+        states_str = st.text_input("Estados (separados por comas)", 
                                  value=",".join(sorted(st.session_state.states)))
         st.session_state.states = set(s.strip() for s in states_str.split(",") if s.strip())
         
         # Initial state
         if st.session_state.states:
-            initial_state = st.selectbox("Initial State", 
+            initial_state = st.selectbox("Estado Inicial", 
                                        sorted(st.session_state.states),
                                        index=0 if st.session_state.initial_state not in st.session_state.states 
                                        else list(sorted(st.session_state.states)).index(st.session_state.initial_state))
             st.session_state.initial_state = initial_state
         
         # Final states
-        final_states = st.multiselect("Final States", 
+        final_states = st.multiselect("Estados Finales", 
                                     sorted(st.session_state.states),
                                     default=list(st.session_state.final_states))
         st.session_state.final_states = set(final_states)
@@ -508,7 +492,7 @@ def main():
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.header("📊 DFA Visualization")
+        st.header("📊 Visualización del AFD")
         
         if st.session_state.states:
             # Create and display the automaton graph
@@ -524,7 +508,7 @@ def main():
             # Automaton information - Quintuple format
             st.markdown(f"""
             <div class="automaton-info">
-                <h4>📋 Quintuple of the Automaton</h4>
+                <h4>📋 Quintupla del Autómata</h4>
                 <p><strong>Estados (Q):</strong> {{{', '.join(sorted(st.session_state.states))}}}</p>
                 <p><strong>Alfabeto (Σ):</strong> {{{', '.join(st.session_state.alphabet)}}}</p>
                 <p><strong>Estado Inicial (q₀):</strong> {st.session_state.initial_state}</p>
@@ -567,20 +551,20 @@ def main():
                 st.dataframe(df, width='stretch', hide_index=True)
         
         # Transitions editor
-        st.subheader("🔄 Transitions")
+        st.subheader("🔄 Transiciones")
         
         if st.session_state.states and st.session_state.alphabet:
-            with st.expander("Add New Transition", expanded=len(st.session_state.transitions) == 0):
+            with st.expander("Agregar Nueva Transición", expanded=len(st.session_state.transitions) == 0):
                 col_from, col_symbol, col_to, col_add = st.columns([2, 2, 2, 1])
                 
                 with col_from:
-                    from_state = st.selectbox("From", sorted(st.session_state.states), key="from_state")
+                    from_state = st.selectbox("Desde", sorted(st.session_state.states), key="from_state")
                 with col_symbol:
-                    symbol = st.selectbox("Symbol", st.session_state.alphabet, key="symbol")
+                    symbol = st.selectbox("Símbolo", st.session_state.alphabet, key="symbol")
                 with col_to:
-                    to_state = st.selectbox("To", sorted(st.session_state.states), key="to_state")
+                    to_state = st.selectbox("Hacia", sorted(st.session_state.states), key="to_state")
                 with col_add:
-                    if st.button("➕ Add", key="add_transition"):
+                    if st.button("➕ Agregar", key="add_transition"):
                         new_transition = {
                             'from_state': from_state,
                             'to_state': to_state,
@@ -592,27 +576,27 @@ def main():
             
             # Display existing transitions
             if st.session_state.transitions:
-                st.write("**Current Transitions:**")
+                st.write("**Transiciones Actuales:**")
                 for i, transition in enumerate(st.session_state.transitions):
                     col_transition, col_delete = st.columns([4, 1])
                     with col_transition:
                         st.write(f"{transition['from_state']} → {transition['to_state']} : {transition['symbol']}")
                     with col_delete:
-                        if st.button("🗑️", key=f"delete_{i}", help="Delete transition"):
+                        if st.button("🗑️", key=f"delete_{i}", help="Eliminar transición"):
                             st.session_state.transitions.pop(i)
                             st.rerun()
     
     with col2:
-        st.header("🧪 Testing & Simulation")
+        st.header("🧪 Pruebas y Simulación")
         
         # Test string input
-        test_string = st.text_input("Test String", placeholder="Enter string to test...")
+        test_string = st.text_input("Cadena de Prueba", placeholder="Ingresa la cadena a probar...")
         
         # Create two tabs for better organization
-        tab1, tab2 = st.tabs(["🚀 Simulation", "📝 Generate Strings"])
+        tab1, tab2 = st.tabs(["🚀 Simulación", "📝 Generar Cadenas"])
         
         with tab1:
-            if st.button("🚀 Run Simulation", disabled=not test_string or not st.session_state.states):
+            if st.button("🚀 Ejecutar Simulación", disabled=not test_string or not st.session_state.states):
                 try:
                     # Build automaton from session state
                     automaton = build_automaton_from_session_state()
@@ -653,12 +637,12 @@ def main():
                     """, unsafe_allow_html=True)
                     
                 except Exception as e:
-                    st.error(f"Simulation failed: {str(e)}")
+                    st.error(f"La simulación falló: {str(e)}")
         
         with tab2:
             st.write("Genera automáticamente las primeras 10 cadenas aceptadas por el autómata:")
             
-            if st.button("🎯 Generate Accepted Strings", disabled=not st.session_state.states):
+            if st.button("🎯 Generar Cadenas Aceptadas", disabled=not st.session_state.states):
                 try:
                     # Build automaton from session state
                     automaton = build_automaton_from_session_state()
@@ -692,7 +676,7 @@ def main():
                         st.success(f"✅ Se encontraron {total_shown} cadenas aceptadas")
                         
                 except Exception as e:
-                    st.error(f"Error generating strings: {str(e)}")
+                    st.error(f"Error generando cadenas: {str(e)}")
 
 if __name__ == "__main__":
     main()
