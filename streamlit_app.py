@@ -466,7 +466,7 @@ def main():
     
     # Sidebar for automaton configuration
     with st.sidebar:
-    st.header("⚙️ Configuración del DFA")
+        st.header("⚙️ Configuración del DFA")
         
         # Import/Export Section
         with st.expander("📁 Importar/Exportar", expanded=False):            
@@ -581,8 +581,8 @@ def main():
         st.divider()
         
         # Alphabet configuration
-    st.subheader("Alfabeto")
-    alphabet_str = st.text_input("Símbolos (separados por comas)", 
+        st.subheader("Alfabeto")
+        alphabet_str = st.text_input("Símbolos (separados por comas)", 
                                    value=",".join(st.session_state.alphabet),
                                    key=f"alphabet_input_{st.session_state.get('refresh_counter', 0)}")
         new_alphabet = [s.strip() for s in alphabet_str.split(",") if s.strip()]
@@ -590,8 +590,8 @@ def main():
             st.session_state.alphabet = new_alphabet
         
         # States configuration
-    st.subheader("Estados")
-    states_str = st.text_input("Estados (separados por comas)", 
+        st.subheader("Estados")
+        states_str = st.text_input("Estados (separados por comas)", 
                                  value=",".join(sorted(st.session_state.states)),
                                  key=f"states_input_{st.session_state.get('refresh_counter', 0)}")
         new_states = set(s.strip() for s in states_str.split(",") if s.strip())
@@ -639,7 +639,7 @@ def main():
     col1, col2 = st.columns([2, 1])
     
     with col1:
-    st.header("📊 Visualización del DFA")
+        st.header("📊 Visualización del DFA")
         
         if st.session_state.states:
             try:
@@ -668,7 +668,7 @@ def main():
                 st.error(f"Error displaying automaton: {str(e)}")
         
         # Transitions editor
-    st.subheader("🔄 Transiciones")
+        st.subheader("🔄 Transiciones")
         
         if st.session_state.states and st.session_state.alphabet:
             with st.expander("Añadir nueva transición", expanded=len(st.session_state.transitions) == 0):
@@ -718,10 +718,10 @@ def main():
                     st.rerun()
     
     with col2:
-    st.header("🧪 Pruebas y simulación")
+        st.header("🧪 Pruebas y simulación")
         
         # Test string input
-    test_string = st.text_input("Cadena de prueba", placeholder="Ingresa la cadena a probar...")
+        test_string = st.text_input("Cadena de prueba", placeholder="Ingresa la cadena a probar...")
         
         if st.button("🚀 Ejecutar simulación", disabled=not st.session_state.states):
             if test_string is not None:  # Allow empty string
@@ -773,8 +773,8 @@ def main():
                     st.error(f"Simulación paso a paso fallida: {str(e)}")
         
         # Quick test section
-    st.subheader("🧪 Pruebas rápidas")
-    st.write("Prueba patrones comunes:")
+        st.subheader("🧪 Pruebas rápidas")
+        st.write("Prueba patrones comunes:")
         
         quick_tests = ["", "0", "1", "01", "10", "001", "101", "0101", "1010"]
         
