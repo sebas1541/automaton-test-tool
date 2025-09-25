@@ -404,7 +404,6 @@ def main():
         # Sample automata buttons
         if st.button("📘 AFD de Ejemplo", help="Crear un AFD que acepta cadenas terminadas en '01'"):
             create_sample_dfa()
-            st.rerun()
         st.divider()
         
         # Import/Export section
@@ -430,7 +429,6 @@ def main():
                 if import_automaton_file(uploaded_file):
                     st.session_state.last_imported_file = file_id
                     st.success("✅ ¡Autómata importado exitosamente!")
-                    st.rerun()
                 else:
                     st.session_state.last_imported_file = file_id
         
@@ -548,7 +546,7 @@ def main():
                 # Display table
                 import pandas as pd
                 df = pd.DataFrame(table_data)
-                st.dataframe(df, width='stretch', hide_index=True)
+                st.dataframe(df, use_container_width=True)
         
         # Transitions editor
         st.subheader("🔄 Transiciones")
