@@ -15,7 +15,7 @@ class SidebarComponent:
     def render():
         """Render the complete sidebar interface."""
         with st.sidebar:
-            st.header("⚙️ Configuración del AFD")
+            st.header("Configuración del AFD")
             
             # Sample automata buttons
             if st.button("📘 AFD de Ejemplo", help="Crear un AFD que acepta cadenas terminadas en '01'"):

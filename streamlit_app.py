@@ -35,7 +35,7 @@ def configure_streamlit():
 
 def render_header():
     """Render the main application header."""
-    st.markdown('<h1 class="main-header">⚙️ Herramienta de Pruebas AFD</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">Herramienta de Pruebas AFD</h1>', unsafe_allow_html=True)
     st.markdown("**Visualización y Simulación Interactiva de Autómatas Finitos Deterministas**")
 
 
