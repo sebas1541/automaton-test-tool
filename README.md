@@ -1,8 +1,8 @@
-# ⚙️ Herramienta de Pruebas de Autómatas Finitos
+# Herramienta de Pruebas de Autómatas Finitos
 
 Una herramienta completa desarrollada en Python para crear, visualizar y probar Autómatas Finitos Deterministas (AFD) con una interfaz web interactiva.
 
-## ✨ Características
+## Características
 
 - **Visualización Interactiva**: Gráficos de autómatas usando Graphviz
 - **Soporte para AFD**: Crea y prueba Autómatas Finitos Deterministas
@@ -12,7 +12,7 @@ Una herramienta completa desarrollada en Python para crear, visualizar y probar 
 - **Plantillas de Ejemplo**: Inicio rápido con autómatas de ejemplo predefinidos
 - **Importar/Exportar**: Soporte para formatos JSON y XML
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 ### Requisitos Previos
 - Python 3.9 o superior
@@ -49,7 +49,7 @@ La aplicación se abrirá automáticamente en `http://localhost:8501`
 ### 4. Comenzar
 Haz clic en "📘 AFD de Ejemplo" para cargar un autómata de ejemplo que acepta cadenas terminadas en '01'
 
-## 🏗️ Arquitectura del Proyecto
+## Arquitectura del Proyecto
 
 ```
 automaton-test-tool/
@@ -84,7 +84,7 @@ automaton-test-tool/
 └── ARCHITECTURE.md         # Documentación de arquitectura
 ```
 
-## 🎯 Cómo Usar la Aplicación
+## Cómo Usar la Aplicación
 
 ### Configuración del Autómata
 1. **Alfabeto**: Define los símbolos que puede procesar el autómata (ej: 0,1)
@@ -119,14 +119,14 @@ automaton-test-tool/
 - **Importar**: Sube archivos JSON o XML con definiciones de autómatas
 - **Exportar**: Descarga tu autómata en formato JSON o XML
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 - **Frontend**: Streamlit (Framework web de Python)
 - **Visualización**: Graphviz (Renderizado profesional de grafos)
 - **Backend**: Python puro con arquitectura de dominio limpia
 - **Arquitectura**: Principios SOLID, separación de responsabilidades
 
-## 📝 Ejemplos
+## Ejemplos
 
 ### AFD de Ejemplo Incluido
 La aplicación incluye un AFD de ejemplo que:
@@ -152,13 +152,9 @@ streamlit run streamlit_app.py --server.runOnSave true
 tree -I "__pycache__"
 ```
 
-## 🤝 Contribuir
+## Contribuir
 
 1. Haz fork del repositorio
 2. Crea una rama para tu característica
 3. Realiza tus cambios
 4. Envía un pull request
-
-## 📄 Licencia
-
-Este proyecto es de código abierto y está disponible bajo la Licencia MIT.
