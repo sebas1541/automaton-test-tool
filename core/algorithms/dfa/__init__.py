@@ -12,7 +12,7 @@ Classes:
     DFAStringGenerator: Generates strings accepted by a DFA
 
 Usage:
-    from backend.algorithms.dfa import DFASimulator, SimulationStep, StepByStepSimulation, DFAStringGenerator
+    from core.algorithms.dfa import DFASimulator, SimulationStep, StepByStepSimulation, DFAStringGenerator
 """
 
 from .dfa_simulator import DFASimulator

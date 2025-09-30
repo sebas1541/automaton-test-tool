@@ -7,7 +7,7 @@ This package provides the core data structures for representing finite automata:
 - Automaton: Complete automaton representation
 
 Usage:
-    from backend.models import State, Transition, Automaton
+    from core.models import State, Transition, Automaton
 """
 
 from .state import State

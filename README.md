@@ -1,85 +1,164 @@
-# 🤖 Automaton Test Tool
+# ⚙️ Herramienta de Pruebas de Autómatas Finitos
 
-A comprehensive Python-based tool for creating, visualizing, and testing finite automata (DFA and NFA).
+Una herramienta completa desarrollada en Python para crear, visualizar y probar Autómatas Finitos Deterministas (AFD) con una interfaz web interactiva.
 
-## ✨ Features
+## ✨ Características
 
-- **Interactive Visualization**: Beautiful automaton graphs using Graphviz
-- **DFA & NFA Support**: Create and test both deterministic and non-deterministic automata
-- **Real-time Simulation**: Test strings with instant accept/reject feedback
-- **Step-by-Step Execution**: Trace automaton execution step by step
-- **NFA to DFA Conversion**: Convert NFAs to equivalent DFAs automatically
-- **Sample Templates**: Quick-start with pre-built example automata
-- **Clean Architecture**: Well-organized backend with domain-based packages
+- **Visualización Interactiva**: Gráficos de autómatas usando Graphviz
+- **Soporte para AFD**: Crea y prueba Autómatas Finitos Deterministas
+- **Simulación en Tiempo Real**: Prueba cadenas con retroalimentación instantánea de aceptación/rechazo
+- **Ejecución Paso a Paso**: Rastrea la ejecución del autómata paso a paso
+- **Generación de Cadenas**: Genera automáticamente cadenas aceptadas por el autómata
+- **Plantillas de Ejemplo**: Inicio rápido con autómatas de ejemplo predefinidos
+- **Importar/Exportar**: Soporte para formatos JSON y XML
 
-## 🚀 Quick Start
+## 🚀 Inicio Rápido
 
-1. **Install Dependencies**:
+### Requisitos Previos
+- Python 3.9 o superior
+- Graphviz instalado en el sistema
+
+### 1. Instalar Dependencias
+```bash
+pip install -r requirements.txt
+```
+
+### Ejecución de la Aplicación
+
+1. **Ejecutar la aplicación (comando recomendado):**
    ```bash
-   pip install -r requirements.txt
+   python3 -m streamlit run streamlit_app.py
    ```
 
-2. **Run the App**:
+2. **Con parámetros personalizados:**
+   ```bash
+   python3 -m streamlit run streamlit_app.py --server.port 8502 --server.headless true
+   ```
+
+3. **Método alternativo (si el anterior no funciona):**
    ```bash
    streamlit run streamlit_app.py
    ```
 
-3. **Open in Browser**: Navigate to `http://localhost:8501`
+**Nota:** Es posible que veas una advertencia sobre urllib3 y SSL - esto es normal y no afecta el funcionamiento de la aplicación.
 
-4. **Get Started**: Click "Sample DFA" or "Sample NFA" to load an example
 
-## 🏗️ Architecture
+### 3. Abrir en el Navegador
+La aplicación se abrirá automáticamente en `http://localhost:8501`
+
+### 4. Comenzar
+Haz clic en "📘 AFD de Ejemplo" para cargar un autómata de ejemplo que acepta cadenas terminadas en '01'
+
+## 🏗️ Arquitectura del Proyecto
 
 ```
 automaton-test-tool/
-├── streamlit_app.py          # Main Streamlit application
-├── backend/
+├── streamlit_app.py          # Punto de entrada principal
+├── core/                     # Lógica de dominio
 │   ├── algorithms/
-│   │   ├── dfa/             # DFA simulation logic
-│   │   ├── nfa/             # NFA simulation logic
-│   │   └── conversion/      # NFA to DFA conversion
-│   └── models/              # Data models
-├── requirements.txt         # Python dependencies
-└── README.md               # This file
+│   │   └── dfa/             # Algoritmos de simulación AFD
+│   │       ├── dfa_simulator.py
+│   │       ├── step_by_step_simulation.py
+│   │       ├── simulation_step.py
+│   │       └── string_generator.py
+│   └── models/              # Modelos de datos
+│       ├── automaton.py
+│       ├── state.py
+│       └── transition.py
+├── ui/                      # Capa de interfaz de usuario
+│   ├── components/          # Componentes de UI
+│   │   ├── sidebar_component.py
+│   │   ├── visualization_component.py
+│   │   ├── transitions_editor_component.py
+│   │   └── simulation_component.py
+│   ├── services/           # Servicios de lógica de negocio
+│   │   ├── session_state_manager.py
+│   │   ├── automaton_builder.py
+│   │   └── import_export_service.py
+│   ├── styles/             # Estilos y apariencia
+│   │   └── app_styles.py
+│   └── utils/              # Utilidades
+│       └── visualization_utils.py
+├── requirements.txt         # Dependencias de Python
+├── README.md               # Este archivo
+└── ARCHITECTURE.md         # Documentación de arquitectura
 ```
 
-## 🎯 Usage
+## 🎯 Cómo Usar la Aplicación
 
-### Creating Automatons
-- Use the sidebar to configure states, alphabet, and transitions
-- Set initial and final states
-- Add transitions using the interactive form
+### Configuración del Autómata
+1. **Alfabeto**: Define los símbolos que puede procesar el autómata (ej: 0,1)
+2. **Estados**: Crea los estados del autómata (ej: q0,q1,q2)
+3. **Estado Inicial**: Selecciona el estado donde comienza la simulación
+4. **Estados Finales**: Marca los estados de aceptación
 
-### Testing Strings
-- Enter a test string in the input field
-- Click "Run Simulation" for instant results
-- Use "Step-by-Step Simulation" for detailed execution trace
+### Definir Transiciones
+1. Ve a la sección "🔄 Transiciones"
+2. Usa el formulario para agregar nuevas transiciones:
+   - **Desde**: Estado origen
+   - **Símbolo**: Símbolo de entrada
+   - **Hacia**: Estado destino
+3. Haz clic en "➕ Agregar" para añadir la transición
+4. Las transiciones existentes se muestran con opción de eliminar
 
-### Advanced Features
-- **NFA Conversion**: Convert any NFA to an equivalent DFA
-- **Visual Feedback**: Color-coded accept/reject results
-- **Real-time Updates**: Changes reflect immediately in the graph
+### Probar Cadenas
+1. Ve a la pestaña "🚀 Simulación"
+2. Ingresa una cadena de prueba
+3. Haz clic en "🚀 Ejecutar Simulación"
+4. La aplicación mostrará:
+   - Proceso paso a paso de la evaluación
+   - Estado final alcanzado
+   - Resultado: ACEPTADA ✅ o RECHAZADA ❌
 
-## 🛠️ Technology Stack
+### Generar Cadenas Automáticamente
+1. Ve a la pestaña "📝 Generar Cadenas"
+2. Haz clic en "🎯 Generar Cadenas Aceptadas"
+3. La aplicación generará las primeras 10 cadenas aceptadas por el autómata
 
-- **Frontend**: Streamlit (Python web framework)
-- **Visualization**: Graphviz (professional graph rendering)
-- **Backend**: Pure Python with clean domain architecture
-- **Libraries**: NetworkX, Matplotlib, Plotly
+### Importar/Exportar Autómatas
+- **Importar**: Sube archivos JSON o XML con definiciones de autómatas
+- **Exportar**: Descarga tu autómata en formato JSON o XML
 
-## 📝 Examples
+## 🛠️ Stack Tecnológico
 
-The app includes sample automata:
-- **Sample DFA**: Accepts strings ending with "01"
-- **Sample NFA**: Accepts strings containing "01"
+- **Frontend**: Streamlit (Framework web de Python)
+- **Visualización**: Graphviz (Renderizado profesional de grafos)
+- **Backend**: Python puro con arquitectura de dominio limpia
+- **Arquitectura**: Principios SOLID, separación de responsabilidades
 
-## 🤝 Contributing
+## 📝 Ejemplos
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+### AFD de Ejemplo Incluido
+La aplicación incluye un AFD de ejemplo que:
+- **Acepta**: Cadenas que terminan en "01"
+- **Estados**: q0 (inicial), q1, q2 (final)
+- **Ejemplos de cadenas aceptadas**: "01", "101", "001", "1001"
+- **Ejemplos de cadenas rechazadas**: "1", "10", "11", "000"
 
-## 📄 License
+## 🔧 Comandos de Desarrollo
 
-This project is open source and available under the MIT License.
+### Verificar Instalación
+```bash
+python3 -c "import streamlit_app; print('✅ Instalación exitosa!')"
+```
+
+### Ejecutar en Modo Desarrollo
+```bash
+streamlit run streamlit_app.py --server.runOnSave true
+```
+
+### Verificar Estructura del Proyecto
+```bash
+tree -I "__pycache__"
+```
+
+## 🤝 Contribuir
+
+1. Haz fork del repositorio
+2. Crea una rama para tu característica
+3. Realiza tus cambios
+4. Envía un pull request
+
+## 📄 Licencia
+
+Este proyecto es de código abierto y está disponible bajo la Licencia MIT.

@@ -10,10 +10,10 @@ DFA (Deterministic Finite Automata):
 
 Usage:
     # Import from domain package
-    from backend.algorithms.dfa import DFASimulator, SimulationStep, StepByStepSimulation
+    from core.algorithms.dfa import DFASimulator, SimulationStep, StepByStepSimulation
     
     # Or import from main package (convenience)
-    from backend.algorithms import DFASimulator
+    from core.algorithms import DFASimulator
 """
 
 # Import from DFA domain package for convenience

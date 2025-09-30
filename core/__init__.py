@@ -7,8 +7,8 @@ This package provides a complete Deterministic Finite Automata (DFA) library wit
 - API endpoints for web interface
 
 Usage:
-    from backend.models import State, Transition, Automaton
-    from backend.algorithms import DFASimulator
+    from core.models import State, Transition, Automaton
+    from core.algorithms import DFASimulator
 """
 
 from .models import State, Transition, Automaton
